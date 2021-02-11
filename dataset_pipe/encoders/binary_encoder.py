@@ -1,10 +1,8 @@
-from encoders.interfaces.encoder_interface import EncoderInterface
-from interface import implements
-from encoders.math.ops import zeros
 import numpy as np
+from dataset_pipe.encoders.math.ops import zeros
 
 
-class BinaryEncoder(implements(EncoderInterface)):
+class BinaryEncoder:
 
     def __init__(self, dim, repeat_output=0):
         self.repeat_output = repeat_output
@@ -33,9 +31,3 @@ class BinaryEncoder(implements(EncoderInterface)):
     def dim(self):
         return self._dim
 
-
-if __name__ == "__main__":
-    wae = BinaryEncoder(dim=10, repeat_output=2)
-    a = wae.encode([0, 1, 2, 9])
-    print(a)
-    print(a.shape)

@@ -1,9 +1,7 @@
-from encoders.interfaces.encoder_interface import EncoderInterface
-from interface import implements
-from encoders.math.ops import zeros
+from dataset_pipe.encoders.math.ops import zeros
 
 
-class OneHotEncoder(implements(EncoderInterface)):
+class OneHotEncoder:
 
     def __init__(self, dim):
         self._dim = dim

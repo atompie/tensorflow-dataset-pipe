@@ -82,12 +82,10 @@ This is an example of OneHotEncoder. Encoder needs 4 methods.
 * dim - returns dimension of the vector
 
 ```python
-from encoders.interfaces.encoder_interface import EncoderInterface
-from interface import implements
-from encoders.math.ops import zeros
+from dataset_pipe.encoders.math.ops import zeros
 
 
-class OneHotEncoder(implements(EncoderInterface)):
+class OneHotEncoder:
 
     def __init__(self, dim):
         self._dim = dim
@@ -123,8 +121,8 @@ encode mapped data.
 
 ```python
 from dataset_pipe.feeds.datasets import FileDataset
-from encoders.dict_to_binary_encoder import DictToBinaryEncoder
-from encoders.one_hot_encoder import OneHotEncoder
+from dataset_pipe.encoders.dict_to_binary_encoder import DictToBinaryEncoder
+from dataset_pipe.encoders.one_hot_encoder import OneHotEncoder
 
 
 def mapper(data):

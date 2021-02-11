@@ -1,12 +1,10 @@
 import math
 import numpy as np
 from collections import defaultdict
-from encoders.interfaces.encoder_interface import EncoderInterface
-from interface import implements
-from encoders.math.ops import zeros
+from dataset_pipe.encoders.math.ops import zeros
 
 
-class DictToBinaryEncoder(implements(EncoderInterface)):
+class DictToBinaryEncoder:
 
     def __init__(self, value2idx_dict, post_process=None, normalize=False):
 

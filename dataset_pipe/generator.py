@@ -1,9 +1,7 @@
 import types
-from interface import implements
-
 from dataset_pipe.dataset import Dataset
 from dataset_pipe.encoder_list import EncoderList
-from encoders.interfaces.encoder_interface import EncoderInterface
+import dataset_pipe.utils.method as method
 
 
 class Generator:
@@ -44,9 +42,11 @@ class Generator:
         if not isinstance(data, dict):
             raise ValueError(f'Param {param_name} must be dict.')
         for name, encoder in data.items():
-            if not isinstance(encoder, implements(EncoderInterface)):
+            required_methods = ['dim', 'type', 'shape', 'encode']
+            if not method.has_all(encoder, required_methods):
+                missing_methods = method.get_missing(encoder, required_methods)
                 raise ValueError(
-                    f'Encoder {param_name}.{name} must contain Encoders only that implement EncoderInterface.')
+                    f'Encoder mapped to {param_name}.{name} implement all {required_methods} methods. Method {missing_methods} missing.')
 
     def shapes(self):
         if self._output_encoders and self._input_encoders:

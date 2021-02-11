@@ -1,9 +1,7 @@
 import numpy as np
-from interface import implements
-from encoders.interfaces.encoder_interface import EncoderInterface
 
 
-class ZeroDummyEncoder(implements(EncoderInterface)):
+class ZeroDummyEncoder:
 
     def __init__(self, dim):
         self._dim = dim
@@ -23,7 +21,7 @@ class ZeroDummyEncoder(implements(EncoderInterface)):
         return self._dim
 
 
-class NoneEncoder(implements(EncoderInterface)):
+class NoneEncoder:
 
     def __init__(self):
         self._dim = 0
