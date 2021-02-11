@@ -1,0 +1,4 @@
+recursive-include dataset_pipe/feeds *
+recursive-include dataset_pipe/readers *
+recursive-include encoders/interfaces *
+recursive-include encoders/math *
