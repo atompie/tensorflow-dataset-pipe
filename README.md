@@ -178,3 +178,18 @@ dataset.encode(
 ```
 
 Remember order maters when maping and encoding.  
+
+```python
+train_dataset = dataset.feed("train.csv").batch(10)  # pass it to fit_generator method in keras
+eval_dataset = dataset.feed("eval.csv").batch(10)
+
+...
+
+model.fit_generator(
+            train_dataset,
+            validation_data=eval_dataset,
+            steps_per_epoch=10,
+            validation_steps=5,
+            epochs=10
+)
+```
