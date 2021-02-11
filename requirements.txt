@@ -1,0 +1,4 @@
+tensorflow
+python-interface==1.5.3
+numpy
+numba
