@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='dataset_pipe',
-    version='0.3.1',
+    version='0.4.1',
     description='Utils for encoding and data set reading',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -15,7 +15,6 @@ setup(
     packages=['dataset_pipe'],
     install_requires=[
         'tensorflow',
-        'python-interface==1.5.3',
         'numba'
     ],
     classifiers=[

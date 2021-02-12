@@ -2,3 +2,4 @@ recursive-include dataset_pipe/feeds *
 recursive-include dataset_pipe/readers *
 recursive-include dataset_pipe/encoders *
 recursive-include dataset_pipe/encoders/math *
+recursive-include dataset_pipe/utils *
