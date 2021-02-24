@@ -6,8 +6,9 @@ from dataset_pipe.encoders.math.ops import zeros
 
 class DictToBinaryEncoder:
 
-    def __init__(self, value2idx_dict, post_process=None, normalize=False):
+    def __init__(self, value2idx_dict, post_process=None, normalize=False, append_none_idx=True):
 
+        self.append_none_idx = append_none_idx
         self.post_process = post_process
         self.normalize = normalize
         if '<none>' not in value2idx_dict:
@@ -42,7 +43,7 @@ class DictToBinaryEncoder:
 
                 is_empty = False
 
-        if is_empty:
+        if is_empty and self.append_none_idx:
             idx = self.value2idx['<none>']
             vector[idx] = 1.0
         elif self.post_process:

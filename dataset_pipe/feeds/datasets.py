@@ -1,18 +1,23 @@
 from dataset_pipe.feeds.base import BaseDataSet
 from dataset_pipe.readers.csv_reader import csv_reader
+from dataset_pipe.readers.file_reader import file_reader
 from dataset_pipe.readers.json_reader import json_reader
 
 
 class FileDataset(BaseDataSet):
 
-    def __init__(self, content):
+    def __init__(self, content, custom_reader=None):
 
         if content == 'json':
             reader = json_reader
         elif content == 'csv':
             reader = csv_reader
+        elif content == 'file':
+            reader = file_reader
+        elif custom_reader is None:
+            raise ValueError("Unknown or not supported content type. If you want to use custom reader set custom reader param.")
         else:
-            raise ValueError("Unknown or not supported content type.")
+            reader = custom_reader
 
         super().__init__(reader)
 

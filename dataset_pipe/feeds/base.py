@@ -34,6 +34,7 @@ class BaseDataSet:
         self.map_lambda = _filter
         self.input_encoder_list = None
         self.output_encoder_list = None
+        self._processor = None
 
     @staticmethod
     def _get_generator(reader, encoders):
@@ -73,6 +74,9 @@ class BaseDataSet:
         self.input_encoder_list = EncoderList(OrderedDict(input))
         self.output_encoder_list = EncoderList(OrderedDict(output))
 
+    def process(self, func):
+        self._processor = func
+
     def _get_reader(self, file, skip=None):
 
         def _data_reader(dataset_file):
@@ -88,10 +92,21 @@ class BaseDataSet:
                     if self.map_lambda:
                         # yields data via filter
                         filtered_data = self.map_lambda(data)
+
+                        # skip not mapped values
+                        if filtered_data is None:
+                            continue
+
                         if not isinstance(filtered_data, tuple) or len(filtered_data) != 2:
                             raise ValueError("Filter function must return tuple with 2 arguments: input and output")
+
                         x, y = filtered_data
-                        yield OrderedDict(x), OrderedDict(y)
+
+                        if self._processor is None:
+                            yield OrderedDict(x), OrderedDict(y)
+                        else:
+                            for _x, _y in self._processor(x, y):
+                                yield _x, _y
                     else:
                         yield data
 
