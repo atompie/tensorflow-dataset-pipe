@@ -13,7 +13,8 @@ class XYDataset(BaseDataSet):
 
     def __init__(self, content, custom_reader=None):
 
-        self.output_encoder_list = None
+        self.generator = None
+        self.shapes = None
 
         if content == 'json':
             reader = json_reader
@@ -28,24 +29,6 @@ class XYDataset(BaseDataSet):
             reader = custom_reader
 
         super().__init__(reader)
-
-    @staticmethod
-    def _get_generator(reader, encoders):
-        inputs, outputs = encoders
-
-        return XYGenerator(
-            data=reader,
-            input_encoders=inputs,
-            output_encoders=outputs
-        )
-
-    @staticmethod
-    def _get_tf_data(generator):
-        return tf.data.Dataset.from_generator(
-            generator,
-            output_types=generator.types(),
-            output_shapes=generator.shapes()
-        ).repeat().prefetch(-1)
 
     def _get_reader(self, file, skip=None):
 
@@ -82,33 +65,45 @@ class XYDataset(BaseDataSet):
 
         return _data_reader(file)
 
-    def _get_data_generators(self, file):
-        encoders = (self.input_encoder_list, self.output_encoder_list)
-        reader = self._get_reader(file)
-        return self._get_generator(reader, encoders)
+    def __call__(self, *args, **kwargs) -> Dataset:
 
-    def feed(self, file) -> Dataset:
-        generator = self._get_data_generators(file)
+        file = args[0]
 
-        if self.input_encoder_list and self.output_encoder_list:
-            dataset = self._get_tf_data(generator)
-        else:
-            dataset = generator
+        if self.generator is None:
+            raise ValueError(
+                "Encoding is not set. Use encode method to set encoding.  If you want to debug data call debug method.")
 
-        input_shapes, output_shapes = generator.shapes()
+        self.generator.set_data_reader(self._get_reader(file))
+
+        dataset = tf.data.Dataset.from_generator(
+            self.generator,
+            output_types=self.generator.types(),
+            output_shapes=self.generator.shapes()
+        ).repeat().prefetch(-1)
+
+        input_shapes, output_shapes = self.shapes
 
         return Dataset(dataset, input_shapes, output_shapes)
 
     def encode(self, input: dict, output=None):
         if output is None:
             output = {}
-        self.input_encoder_list = EncoderList(OrderedDict(input))
-        self.output_encoder_list = EncoderList(OrderedDict(output))
+        self.generator = XYGenerator(
+            input_encoders=EncoderList(OrderedDict(input)),
+            output_encoders=EncoderList(OrderedDict(output))
+        )
+        self.shapes = self.generator.shapes()
+
+    def debug(self, data):
+        return self._get_reader(data)
 
 
 class XDataset(BaseDataSet):
 
     def __init__(self):
+
+        self.generator = None
+        self.shapes = None
 
         def _reader(source):
             for x in source:
@@ -136,18 +131,33 @@ class XDataset(BaseDataSet):
         super().__init__(_reader)
 
     def encode(self, input: dict):
-        self.input_encoder_list = EncoderList(OrderedDict(input))
-
-    def feed(self, data):
-
-        generator = XGenerator(
-            data=self.reader(data),
-            input_encoders=self.input_encoder_list
+        self.generator = XGenerator(
+            input_encoders=EncoderList(OrderedDict(input))
         )
+        self.shapes = self.generator.shapes()
+
+    def __call__(self, *args, **kwargs):
+
+        """
+            Returns encoded data and its shape
+        """
+
+        data = args[0]
+
+        if self.generator is None:
+            raise ValueError(
+                "Encoding is not set. Use encode method to set encoding. If you want to debug data call debug method.")
+
+        self.generator.set_data_reader(self.reader(data))
 
         dataset = tf.data.Dataset.from_generator(
-            generator,
-            output_types=generator.types()
+            self.generator,
+            output_types=self.generator.types()
         ).prefetch(-1)
 
-        return Dataset(dataset, generator.shapes(), None)
+        # batch and return list
+        return list(dataset.batch(len(args[0]))), self.shapes
+
+    def debug(self, data):
+        for x in self.reader(data):
+            yield x

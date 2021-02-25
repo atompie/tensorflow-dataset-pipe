@@ -6,6 +6,9 @@ import dataset_pipe.utils.method as method
 
 class BaseGenerator:
 
+    def __init__(self):
+        self._data = None
+
     @staticmethod
     def _validate(data, param_name):
         if not isinstance(data, dict):
@@ -20,25 +23,37 @@ class BaseGenerator:
     def dataset(self):
         return Dataset(self)
 
+    def set_data_reader(self, reader):
+        if not isinstance(reader, types.GeneratorType):
+            raise ValueError("Reader param is not generator")
+
+        self._data = reader
+
 
 class XYGenerator(BaseGenerator):
 
-    def __init__(self, data, input_encoders: EncoderList, output_encoders: EncoderList):
-        if not isinstance(data, types.GeneratorType):
-            raise ValueError("Data param is not generator")
+    def __init__(self, input_encoders: EncoderList, output_encoders: EncoderList):
+
+        super().__init__()
+
         if not isinstance(input_encoders, EncoderList) and input_encoders is not None:
             raise ValueError("Param input_encoders must be EncoderList or None")
         if not isinstance(output_encoders, EncoderList) and output_encoders is not None:
             raise ValueError("Param output_encoders must be EncoderList or None")
-        self._data = data
+
         if input_encoders:
             self._validate(input_encoders, 'input_encoders')
         if output_encoders:
             self._validate(output_encoders, 'output_encoders')
+
         self._input_encoders = input_encoders
         self._output_encoders = output_encoders
 
     def __iter__(self):
+
+        if not self._data:
+            raise ValueError("Data reader is not set. Use set_data_reader method to set reader.")
+
         if self._input_encoders and self._output_encoders:
             for x, y in self._data:
                 x = self._input_encoders.encode(x)
@@ -67,17 +82,23 @@ class XYGenerator(BaseGenerator):
 
 class XGenerator(BaseGenerator):
 
-    def __init__(self, data, input_encoders: EncoderList):
-        if not isinstance(data, types.GeneratorType):
-            raise ValueError("Data param is not generator")
+    def __init__(self, input_encoders: EncoderList):
+
+        super().__init__()
+
         if not isinstance(input_encoders, EncoderList) and input_encoders is not None:
             raise ValueError("Param input_encoders must be EncoderList or None")
-        self._data = data
+
         if input_encoders:
             self._validate(input_encoders, 'input_encoders')
+
         self._input_encoders = input_encoders
 
     def __iter__(self):
+
+        if not self._data:
+            raise ValueError("Data reader is not set. Use set_data_reader method to set reader.")
+
         if self._input_encoders:
             for x in self._data:
                 x = self._input_encoders.encode(x)
