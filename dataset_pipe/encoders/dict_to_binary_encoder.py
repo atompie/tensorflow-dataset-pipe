@@ -53,13 +53,16 @@ class DictToBinaryEncoder:
 
         return vector
 
-    def decode(self, vector, threshold=.5):
-        if not isinstance(vector, np.ndarray):
-            raise ValueError("Decoded data must be list. {} {} given".format(type(vector), vector))
+    def _decode(self, vector, threshold=.5):
+        if not isinstance(vector, np.ndarray) and not isinstance(vector, list):
+            raise ValueError("Decoded data must be np.ndarray. {} {} given".format(type(vector), vector))
 
         for p, v in enumerate(vector):
             if v >= threshold:
                 yield self.idx2value[p], vector[p]
+
+    def decode(self, vector, threshold=.5):
+        return list(self._decode( vector, threshold))
 
     def shape(self):
         return self._shape

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='dataset_pipe',
-    version='0.5.4',
+    version='0.6',
     description='Utils for encoding and data set reading',
     long_description=long_description,
     long_description_content_type="text/markdown",

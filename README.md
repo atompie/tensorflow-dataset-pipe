@@ -18,10 +18,10 @@ Your input date is in the first column and output data is in the 2nd column.
 You need to encode both input and output. YOu could start like this:
 
 ```python
-from dataset_pipe.feeds.datasets import FileDataset
+from dataset_pipe.feeds.datasets import XYDataset
 
 
-dataset = FileDataset("csv")
+dataset = XYDataset("csv")
 data = dataset.feed("file.csv")
 
 # x is your input
@@ -45,7 +45,7 @@ This way you can debug if the library is reading the right data.
 Now lest map and filter (optionally) the data. Mapping is necessary for the encoding process.
  
 ```
-from dataset_pipe.feeds.datasets import FileDataset
+from dataset_pipe.feeds.datasets import XYDataset
 
 def mapper(data):
     words = data[0].split()     # split first column into words
@@ -59,7 +59,7 @@ def mapper(data):
         {'y': category}         # output
 
 
-dataset = FileDataset("csv")
+dataset = XYDataset("csv")
 data = dataset.map(mapper).feed("file.csv")
 for x, y in data:
     print(x, y)
@@ -120,7 +120,7 @@ OneHotEncoder is also included in the library. Now will use this encoder togethe
 encode mapped data.
 
 ```python
-from dataset_pipe.feeds.datasets import FileDataset
+from dataset_pipe.feeds.datasets import XYDataset
 from dataset_pipe.encoders.dict_to_binary_encoder import DictToBinaryEncoder
 from dataset_pipe.encoders.one_hot_encoder import OneHotEncoder
 
@@ -142,7 +142,7 @@ bag_of_words_2_idx = {
 }
 
 
-dataset = FileDataset("csv")
+dataset = XYDataset("csv")
 dataset.map(mapper)
 dataset.encode(
     {"x": DictToBinaryEncoder(bag_of_words_2_idx)}, 
