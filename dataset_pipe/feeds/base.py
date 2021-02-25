@@ -29,6 +29,7 @@ class BaseDataSet:
 
     def process(self, func):
         self._processor = func
+        return self
 
     def map(self, map_lambda):
         self.map_lambda = map_lambda

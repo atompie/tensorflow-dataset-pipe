@@ -94,6 +94,8 @@ class XYDataset(BaseDataSet):
         )
         self.shapes = self.generator.shapes()
 
+        return self
+
     def debug(self, data):
         return self._get_reader(data)
 
@@ -136,6 +138,8 @@ class XDataset(BaseDataSet):
         )
         self.shapes = self.generator.shapes()
 
+        return self
+
     def __call__(self, *args, **kwargs):
 
         """
@@ -159,5 +163,4 @@ class XDataset(BaseDataSet):
         return list(dataset.batch(len(args[0]))), self.shapes
 
     def debug(self, data):
-        for x in self.reader(data):
-            yield x
+        return self.reader(data)
