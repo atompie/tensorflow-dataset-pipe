@@ -145,7 +145,9 @@ class XDataset(BaseDataSet):
             input_encoders=self.input_encoder_list
         )
 
-        return tf.data.Dataset.from_generator(
+        dataset = tf.data.Dataset.from_generator(
             generator,
             output_types=generator.types()
         ).prefetch(-1)
+
+        return Dataset(dataset, generator.shapes(), None)

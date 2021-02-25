@@ -1,9 +1,12 @@
+import numpy as np
+
+
 class DecoderList:
 
     def __init__(self, decoders: list):
         if not isinstance(decoders, list):
             raise ValueError(
-                "decoders mus be a list of output decoders in order of ouput results. {} given".format(type(decoders)))
+                "decoders mus be a list of output decoders in order of output results. {} given".format(type(decoders)))
         self.decoders = decoders
         self.no_of_decoders = len(decoders)
 
@@ -11,6 +14,12 @@ class DecoderList:
         return [encoder.decode(items) for encoder in self.decoders]
 
     def batch_decode(self, batch_of_items):
+
+        # if there is only one output slot then this dimension is omitted. We need to standardize this
+        # so we must add the dimension of output slot.
+        if isinstance(batch_of_items, np.ndarray):
+            batch_of_items = [batch_of_items]
+
         if not isinstance(batch_of_items, list):
             raise ValueError("Batch_of_items must be list of output results. {} given".format(type(batch_of_items)))
 
