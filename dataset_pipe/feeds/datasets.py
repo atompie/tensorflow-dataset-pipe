@@ -2,7 +2,7 @@ import tensorflow as tf
 from collections import OrderedDict
 
 from dataset_pipe.encoder_list import EncoderList
-from dataset_pipe.feeds.base import BaseDataSet, Dataset
+from dataset_pipe.feeds.base import BaseDataSet
 from dataset_pipe.generator import XGenerator, XYGenerator
 from dataset_pipe.readers.csv_reader import csv_reader
 from dataset_pipe.readers.file_reader import file_reader
@@ -65,7 +65,7 @@ class XYDataset(BaseDataSet):
 
         return _data_reader(file)
 
-    def __call__(self, *args, **kwargs) -> Dataset:
+    def __call__(self, *args, **kwargs):
 
         file = args[0]
 
@@ -81,9 +81,7 @@ class XYDataset(BaseDataSet):
             output_shapes=self.generator.shapes()
         ).repeat().prefetch(-1)
 
-        input_shapes, output_shapes = self.shapes
-
-        return Dataset(dataset, input_shapes, output_shapes)
+        return dataset, self.shapes
 
     def encode(self, input: dict, output=None):
         if output is None:

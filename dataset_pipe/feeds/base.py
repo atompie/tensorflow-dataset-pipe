@@ -1,17 +1,3 @@
-class Dataset:
-
-    def __init__(self, dataset, input_shape, output_shape):
-        self.input_shape = input_shape
-        self.output_shape = output_shape
-        self.dataset = dataset
-
-    def __iter__(self):
-        return self.dataset.__iter__()
-
-    def batch(self, batch):
-        return self.dataset.batch(batch)
-
-
 class BaseDataSet:
 
     def __init__(self, reader):
