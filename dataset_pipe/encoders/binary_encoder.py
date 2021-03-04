@@ -1,11 +1,11 @@
 import numpy as np
+from dataset_pipe.encoders.math.ops import zeros
 
 
-class SparseWord2IdxEncoder:
+class BinaryEncoder:
 
-    def __init__(self, dim, word2idx, no_word_idx=None):
-        self.no_word_idx = no_word_idx
-        self.word2idx = word2idx
+    def __init__(self, dim, repeat_output=0):
+        self.repeat_output = repeat_output
         self._dim = dim
         self._shape = (dim,)
         self._type = "float32"
@@ -14,15 +14,13 @@ class SparseWord2IdxEncoder:
         if not isinstance(data, list):
             raise ValueError("Param data must be list. {} given fo type {}".format(data, type(data)))
 
-        vector = []
-        for word in data:
-            if word in self.word2idx:
-                vector.append(self.word2idx[word])
-            elif self.no_word_idx:
-                vector.append(self.no_word_idx)
+        vector = zeros(self._shape)
+        for bit in data:
+            vector[bit] = 1.0
 
-        vector = np.array(vector)
-        return np.expand_dims(vector, axis=-1)
+        if self.repeat_output > 0:
+            return np.repeat(np.array([vector]), self.repeat_output, axis=0)
+        return vector
 
     def shape(self):
         return self._shape
@@ -32,3 +30,4 @@ class SparseWord2IdxEncoder:
 
     def dim(self):
         return self._dim
+
