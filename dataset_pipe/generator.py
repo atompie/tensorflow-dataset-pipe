@@ -51,10 +51,10 @@ class XYGenerator(BaseGenerator):
         self._output_encoders = output_encoders
         self.lock = threading.Lock()
 
-    def __iter__(self):
-        return self
+    # def __iter__(self):
+    #     return self
 
-    def __next__(self):
+    def __iter__(self):
 
         if not self._data:
             raise ValueError("Data reader is not set. Use set_data_reader method to set reader.")
@@ -101,10 +101,10 @@ class XGenerator(BaseGenerator):
         self._input_encoders = input_encoders
         self.lock = threading.Lock()
 
-    def __iter__(self):
-        return self
+    # def __iter__(self):
+    #     return self
 
-    def __next__(self):
+    def __iter__(self):
 
         if not self._data:
             raise ValueError("Data reader is not set. Use set_data_reader method to set reader.")
