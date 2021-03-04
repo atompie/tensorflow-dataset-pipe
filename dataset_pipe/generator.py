@@ -1,3 +1,4 @@
+import threading
 import types
 from dataset_pipe.dataset import Dataset
 from dataset_pipe.encoder_list import EncoderList
@@ -48,20 +49,25 @@ class XYGenerator(BaseGenerator):
 
         self._input_encoders = input_encoders
         self._output_encoders = output_encoders
+        self.lock = threading.Lock()
 
     def __iter__(self):
+        return self
+
+    def __next__(self):
 
         if not self._data:
             raise ValueError("Data reader is not set. Use set_data_reader method to set reader.")
 
-        if self._input_encoders and self._output_encoders:
-            for x, y in self._data:
-                x = self._input_encoders.encode(x)
-                y = self._output_encoders.encode(y)
-                yield tuple(x), tuple(y)
-        else:
-            for x, y in self._data:
-                yield x, y
+        with self.lock:
+            if self._input_encoders and self._output_encoders:
+                for x, y in self._data:
+                    x = self._input_encoders.encode(x)
+                    y = self._output_encoders.encode(y)
+                    yield tuple(x), tuple(y)
+            else:
+                for x, y in self._data:
+                    yield x, y
 
     def batch(self, *args, **kwargs):
         return self.__iter__()
@@ -93,19 +99,24 @@ class XGenerator(BaseGenerator):
             self._validate(input_encoders, 'input_encoders')
 
         self._input_encoders = input_encoders
+        self.lock = threading.Lock()
 
     def __iter__(self):
+        return self
+
+    def __next__(self):
 
         if not self._data:
             raise ValueError("Data reader is not set. Use set_data_reader method to set reader.")
 
-        if self._input_encoders:
-            for x in self._data:
-                x = self._input_encoders.encode(x)
-                yield tuple(x)
-        else:
-            for x in self._data:
-                yield x
+        with self.lock:
+            if self._input_encoders:
+                for x in self._data:
+                    x = self._input_encoders.encode(x)
+                    yield tuple(x)
+            else:
+                for x in self._data:
+                    yield x
 
     def batch(self, *args, **kwargs):
         return self.__iter__()
